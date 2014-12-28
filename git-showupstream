@@ -1,0 +1,79 @@
+#!/bin/bash
+
+# functions {{{
+function help {
+   local scriptname="$(basename $0)"
+   cat >&2 <<EOF
+
+$scriptname [options] [args]
+
+Info about defined upstreams
+
+options:
+   -v, --verbose  Show url for remote
+   -t, --track    Show behind and ahead information           
+   -h, --help     Show this help 
+
+Examples:
+
+ $ $scriptname -v master
+ $ $scriptname -t
+
+EOF
+}
+# }}}
+
+TEMP=$(getopt -o "vth" -l verbose,track,help -n $(basename $0) -- "$@")
+
+EXIT=$?
+if [ $EXIT != 0 ]
+then
+   help
+   exit $EXIT
+fi
+
+# process script arguments
+eval set -- "$TEMP"
+
+while true
+do
+   case "$1" in
+      -v|--verbose)
+         VERBOSE=yes
+         ;;
+      -t|--track) 
+         TRACK=yes
+         ;;
+      -h|--help)
+         help
+         exit
+         ;;
+      --)
+         shift
+         break ;;
+      *)
+         cat <&2 <<EOF
+
+Error, unknow arguments $1
+EOF
+         help
+         exit 1
+         ;;
+   esac
+   shift
+done
+git for-each-ref --format="%(refname:short)" refs/heads | \
+while read entry
+do
+   UPSTREAM=$(git for-each-ref --format='%(upstream:short)' refs/heads/$entry)
+   if [ "$TRACK" = "yes" ]
+   then
+      TRACK_INFO=" $(git for-each-ref --format='%(upstream:trackshort)' refs/heads/$entry)"
+   fi
+   if [ "$VERBOSE" = "yes" ]
+   then
+      REMOTE=${UPSTREAM%/*} 
+      UPSTREAM="$UPSTREAM $(git config --get remote.$REMOTE.url)"
+   fi
+   echo "$entry -> $UPSTREAM$TRACK_INFO"
+done
