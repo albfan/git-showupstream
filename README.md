@@ -11,9 +11,9 @@ Accepts options like `--track` or `--verbose` to show ahead, behind info or url 
 See help option
 
 ```
-$ git show-upstream -h
+$ git showupstream -h
 
-git-show-upstream [options] [args]
+git-showupstream [options] [args]
 
 Info about defined upstreams
 
@@ -24,8 +24,8 @@ options:
 
 Examples:
 
- $ git-show-upstream -v master
- $ git-show-upstream -t
+ $ git-showupstream -v master
+ $ git-showupstream -t
 ```
 
 ## Examples
