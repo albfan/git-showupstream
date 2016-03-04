@@ -10,7 +10,7 @@ Accepts options like `--track` or `--verbose` to show ahead, behind info or url 
 
 See help option
 
-```bash
+```
 $ git show-upstream -h
 
 git-show-upstream [options] [args]
